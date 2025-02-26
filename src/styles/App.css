@@ -1,0 +1,427 @@
+/* Удалите импорт */
+/* @import url('../images/background.jpg'); */
+
+/* Обновляем переменные с цветами */
+:root {
+    --primary-color: #8BC34A; /* Салатный цвет */
+    --secondary-color: #333333;
+    --text-color: #333333;
+    --background-color: #FFFFFF;
+    --accent-color: #E2E2E2;
+    --error-color: #FF4444;
+    --success-color: #4CAF50;
+}
+
+/* Общие стили */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-color);
+    background-color: #F5F5F5;
+}
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стили header */
+.header {
+    background-color: var(--background-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 215, 0, 0.1);
+    color: var(--primary-color);
+}
+
+/* Стили главной страницы */
+.hero {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: white;
+    border-radius: 8px;
+    min-height: 400px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.25); /* Уменьшаем затемнение */
+    z-index: 0; /* Помещаем под текст */
+}
+
+.hero h1,
+.hero p {
+    position: relative;
+    z-index: 1; /* Помещаем текст над фоном */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+    margin: 0.5rem auto;
+    max-width: 800px;
+    font-weight: bold;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.hero .cta-button {
+    position: relative;
+    z-index: 1;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 1rem 2.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.hero .cta-button:hover {
+    transform: translateY(-2px);
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 2rem;
+}
+
+.features {
+    padding: 4rem 1rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Стили footer */
+.footer {
+    margin-top: auto;
+    background-color: var(--accent-color);
+    padding: 2rem 0;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.footer-links a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+/* Добавляем стили для страницы создания истории */
+.create-story-page {
+    position: relative;
+    padding: 2rem;
+    min-height: 100vh;
+    z-index: 1;
+}
+
+/* Добавляем фоновый паттерн */
+.create-story-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--background-image);
+    background-size: 200px 200px;
+    background-repeat: repeat;
+    opacity: 0.15;
+    z-index: -1;
+}
+
+/* Стилизуем форму и контент */
+.create-story-page h2,
+.create-story-page form,
+.create-story-page .story-container {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.create-story-page h2 {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--secondary-color);
+}
+
+/* Стилизация формы */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--accent-color);
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: #FAFAFA;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+/* Стилизация кнопки */
+button {
+    width: 100%;
+    padding: 14px 24px;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+    background-color: var(--accent-color);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Стилизация сообщений */
+.error-message {
+    background-color: rgba(255, 68, 68, 0.1);
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin: 1rem 0;
+    font-size: 14px;
+}
+
+/* Стилизация контейнера истории */
+.story-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #FAFAFA;
+    border-radius: 12px;
+    border: 2px solid var(--accent-color);
+}
+
+.story-container h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+}
+
+.story-content {
+    white-space: pre-wrap;
+    line-height: 1.8;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.story-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .create-story-page {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    button {
+        font-size: 14px;
+    }
+}
+
+/* Стилизация логотипа */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo img {
+    width: 100px;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Добавляем стили для кнопок действий */
+.story-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.story-actions button {
+    flex: 1;
+    max-width: 200px;
+}
+
+.save-button {
+    background-color: var(--success-color);
+}
+
+.edit-button {
+    background-color: var(--primary-color);
+}
+
+.play-button {
+    background-color: var(--secondary-color);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.play-button.playing {
+    background-color: var(--error-color);
+}
+
+/* Добавляем анимацию для кнопки воспроизведения */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.play-button.playing {
+    animation: pulse 2s infinite;
+}
+
+/* Стили для состояния наведения */
+.play-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Стили для отключенного состояния */
+.play-button:disabled {
+    background-color: var(--accent-color);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Стили для предпросмотра */
+.preview-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+} 
