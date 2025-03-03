@@ -1,0 +1,75 @@
+.header {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 40px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+}
+
+.logo img {
+    height: 20px;
+    width: auto;
+    margin-right: 6px;
+}
+
+.logo-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+    font-size: 0.85rem;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 600px) {
+    .header {
+        padding: 3px 8px;
+        min-height: 35px;
+    }
+
+    .logo img {
+        height: 18px;
+    }
+
+    .logo-text {
+        font-size: 0.8rem;
+    }
+
+    .nav-links {
+        gap: 6px;
+    }
+
+    .nav-link {
+        padding: 2px 4px;
+        font-size: 0.75rem;
+    }
+} 

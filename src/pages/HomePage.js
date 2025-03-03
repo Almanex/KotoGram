@@ -1,7 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function HomePage() {
+    const { t } = useTranslation();
+
     const heroStyle = {
         backgroundImage: `url(${process.env.PUBLIC_URL + '/images/background.jpg'})`,
         backgroundSize: '200px 200px',
@@ -12,27 +15,27 @@ function HomePage() {
     return (
         <div className="home-page">
             <section className="hero" style={heroStyle}>
-                <h1>Добро пожаловать в Skazochki!</h1>
-                <p>Создавайте уникальные истории для ваших детей</p>
+                <h1>{t('home.welcome')}</h1>
+                <p>{t('home.subtitle')}</p>
                 <Link to="/create" className="cta-button">
-                    Создать историю
+                    {t('home.createButton')}
                 </Link>
             </section>
             
             <section className="features">
-                <h2>Возможности приложения</h2>
+                <h2>{t('home.features.title')}</h2>
                 <div className="features-grid">
                     <div className="feature-card">
-                        <h3>Персонализация</h3>
-                        <p>Создавайте истории с учетом интересов вашего ребенка</p>
+                        <h3>{t('home.features.personalization.title')}</h3>
+                        <p>{t('home.features.personalization.description')}</p>
                     </div>
                     <div className="feature-card">
-                        <h3>Аудио-формат</h3>
-                        <p>Слушайте истории в профессиональном озвучении</p>
+                        <h3>{t('home.features.audio.title')}</h3>
+                        <p>{t('home.features.audio.description')}</p>
                     </div>
                     <div className="feature-card">
-                        <h3>Совместное творчество</h3>
-                        <p>Редактируйте истории вместе с детьми</p>
+                        <h3>{t('home.features.collaboration.title')}</h3>
+                        <p>{t('home.features.collaboration.description')}</p>
                     </div>
                 </div>
             </section>

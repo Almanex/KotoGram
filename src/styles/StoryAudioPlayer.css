@@ -1,0 +1,38 @@
+.story-audio-player {
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.audio-player {
+    width: 100%;
+    max-width: 400px;
+    margin: 5px 0;
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 600px) {
+    .audio-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .audio-player {
+        width: 100%;
+    }
+    
+    .story-audio-player {
+        margin: 10px 0;
+        padding: 8px;
+    }
+} 

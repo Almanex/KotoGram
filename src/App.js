@@ -20,7 +20,7 @@ function App() {
                         <Route path="/create" element={<CreateStoryPage />} />
                         <Route path="/edit" element={<EditStoryPage />} />
                         <Route path="/read/:id" element={<ReadStoryPage />} />
-                        <Route path="/mystories" element={<MyStoriesPage />} />
+                        <Route path="/my-stories" element={<MyStoriesPage />} />
                     </Routes>
                 </main>
                 <Footer />

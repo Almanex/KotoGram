@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { generateContent } from '../api/geminiApi';
 import { saveStory } from '../api/storyApi';
+import { useTranslation } from 'react-i18next';
 import backgroundImage from '../images/background.jpg';
+import i18next from 'i18next';
+import StoryAudioPlayer from '../components/StoryAudioPlayer';
 
 function CreateStoryPage() {
+    const { t, i18n } = useTranslation();
     const pageStyle = {
         '--background-image': `url(${backgroundImage})`
     };
@@ -11,7 +15,7 @@ function CreateStoryPage() {
     const [storyData, setStoryData] = useState({
         name: '',
         age: '',
-        gender: 'male', // Добавляем пол
+        gender: 'male',
         interests: '',
         template: '1'
     });
@@ -19,23 +23,26 @@ function CreateStoryPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [showForm, setShowForm] = useState(true);
+    const [storyTitle, setStoryTitle] = useState('');
+    const timeoutIds = useRef([]);
 
-    // Добавляем эффект для очистки при размонтировании или изменении истории
     useEffect(() => {
         return () => {
             if (window.speechSynthesis) {
                 window.speechSynthesis.cancel();
                 setIsPlaying(false);
+                timeoutIds.current.forEach(id => clearTimeout(id));
+                timeoutIds.current = [];
             }
         };
-    }, [story]);
+    }, []);
 
     useEffect(() => {
-        // Проверяем поддержку Web Speech API
         if (!window.speechSynthesis) {
-            setError('Ваш браузер не поддерживает функцию чтения вслух.');
+            setError(t('errors.unsupportedBrowser'));
         }
-    }, []);
+    }, [t]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -44,13 +51,20 @@ function CreateStoryPage() {
 
     const handleGenerateStory = async () => {
         try {
+            if (!storyData.name || !storyData.age || !storyData.interests) {
+                setError(t('errors.requiredFields'));
+                return;
+            }
+
             setIsLoading(true);
             setError(null);
             const result = await generateContent(storyData);
             setStory(result.content);
+            setStoryTitle(result.title);
+            setShowForm(false);
         } catch (error) {
             console.error('Error generating story:', error);
-            setError('Произошла ошибка при генерации истории. Пожалуйста, попробуйте еще раз.');
+            setError(t('errors.generation'));
         } finally {
             setIsLoading(false);
         }
@@ -59,16 +73,24 @@ function CreateStoryPage() {
     const handleSaveStory = async () => {
         try {
             setIsLoading(true);
-            const savedStory = await saveStory({
+            setError(null);
+            
+            if (!story) {
+                setError(t('errors.noStoryToSave'));
+                return;
+            }
+
+            await saveStory({
                 ...storyData,
+                title: storyTitle,
                 content: story,
                 createdAt: new Date().toISOString()
             });
-            alert('История успешно сохранена!');
-            // Можно добавить редирект на страницу "Мои истории"
+
+            alert(t('createStory.saveSuccess'));
         } catch (error) {
             console.error('Error saving story:', error);
-            setError('Произошла ошибка при сохранении истории.');
+            setError(t('errors.saving'));
         } finally {
             setIsLoading(false);
         }
@@ -79,42 +101,96 @@ function CreateStoryPage() {
 
         if (isPlaying) {
             window.speechSynthesis.cancel();
+            timeoutIds.current.forEach(id => clearTimeout(id));
+            timeoutIds.current = [];
             setIsPlaying(false);
             return;
         }
 
         try {
-            // Разбиваем текст на предложения
-            const sentences = story.match(/[^.!?]+[.!?]+/g) || [story];
+            timeoutIds.current.forEach(id => clearTimeout(id));
+            timeoutIds.current = [];
+
+            const currentLang = i18next.language;
+            const voices = window.speechSynthesis.getVoices();
             
-            // Создаем очередь для воспроизведения
+            const languageVoices = {
+                'ru': ['ru-RU', 'ru'],
+                'de': ['de-DE', 'de'],
+                'en': ['en-US', 'en-GB', 'en']
+            };
+
+            const getPreferredVoice = (langCodes) => {
+                const premiumVoice = voices.find(voice => 
+                    langCodes.some(code => voice.lang.includes(code)) &&
+                    (voice.name.includes('Premium') || 
+                     voice.name.includes('Enhanced') || 
+                     voice.name.includes('Neural'))
+                );
+                if (premiumVoice) return premiumVoice;
+
+                const femaleVoice = voices.find(voice => 
+                    langCodes.some(code => voice.lang.includes(code)) &&
+                    (voice.name.includes('Female') || 
+                     voice.name.includes('Woman') || 
+                     voice.name.includes('f'))
+                );
+                if (femaleVoice) return femaleVoice;
+
+                return voices.find(voice => 
+                    langCodes.some(code => voice.lang.includes(code))
+                );
+            };
+
+            const preferredVoice = getPreferredVoice(languageVoices[currentLang] || languageVoices['en']);
+
+            const sentences = story.split(/[.!?]+/).map(sentence => sentence.trim()).filter(Boolean);
+            
+            let currentIndex = 0;
             sentences.forEach((sentence, index) => {
-                const utterance = new SpeechSynthesisUtterance(sentence.trim());
-                utterance.lang = 'ru-RU';
+                const utterance = new SpeechSynthesisUtterance(sentence);
+                
+                utterance.voice = preferredVoice;
+                utterance.lang = preferredVoice ? preferredVoice.lang : languageVoices[currentLang][0];
                 utterance.rate = 0.9;
-                utterance.pitch = 1;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
 
-                // Для последнего предложения добавляем обработчик окончания
-                if (index === sentences.length - 1) {
-                    utterance.onend = () => {
-                        setIsPlaying(false);
-                    };
-                }
-
-                utterance.onerror = (event) => {
-                    console.error('Speech synthesis error:', event);
-                    setIsPlaying(false);
-                    setError('Произошла ошибка при воспроизведении истории.');
+                const delay = 800;
+                
+                utterance.onstart = () => {
+                    if (currentIndex === 0) setIsPlaying(true);
                 };
 
-                window.speechSynthesis.speak(utterance);
+                utterance.onend = () => {
+                    currentIndex++;
+                    if (currentIndex >= sentences.length) {
+                        setIsPlaying(false);
+                        timeoutIds.current.forEach(id => clearTimeout(id));
+                        timeoutIds.current = [];
+                    }
+                };
+
+                utterance.onerror = () => {
+                    setIsPlaying(false);
+                    setError(t('errors.playback'));
+                    timeoutIds.current.forEach(id => clearTimeout(id));
+                    timeoutIds.current = [];
+                };
+
+                const timeoutId = setTimeout(() => {
+                    window.speechSynthesis.speak(utterance);
+                }, index * delay);
+                
+                timeoutIds.current.push(timeoutId);
             });
 
-            setIsPlaying(true);
         } catch (error) {
             console.error('Error playing story:', error);
-            setError('Произошла ошибка при воспроизведении истории.');
+            setError(t('errors.playback'));
             setIsPlaying(false);
+            timeoutIds.current.forEach(id => clearTimeout(id));
+            timeoutIds.current = [];
         }
     };
 
@@ -124,85 +200,101 @@ function CreateStoryPage() {
         setError('Произошла ошибка при воспроизведении истории. Попробуйте еще раз.');
     };
 
+    const handleNewStory = () => {
+        setStory('');
+        setShowForm(true);
+        setError(null);
+    };
+
     return (
         <div className="create-story-page" style={pageStyle}>
-            <h2>Создание истории</h2>
-            <form onSubmit={(e) => e.preventDefault()}>
-                <div className="form-group">
-                    <label>
-                        Имя ребенка:
-                        <input 
-                            type="text" 
-                            name="name" 
-                            value={storyData.name} 
-                            onChange={handleInputChange}
-                            required 
-                        />
-                    </label>
-                </div>
-                <div className="form-group">
-                    <label>
-                        Пол:
-                        <select 
-                            name="gender" 
-                            value={storyData.gender} 
-                            onChange={handleInputChange}
-                        >
-                            <option value="male">Мальчик</option>
-                            <option value="female">Девочка</option>
-                        </select>
-                    </label>
-                </div>
-                <div className="form-group">
-                    <label>
-                        Возраст:
-                        <input 
-                            type="number" 
-                            name="age" 
-                            value={storyData.age} 
-                            onChange={handleInputChange}
-                            required 
-                            min="1"
-                            max="12"
-                        />
-                    </label>
-                </div>
-                <div className="form-group">
-                    <label>
-                        Интересы:
-                        <input 
-                            type="text" 
-                            name="interests" 
-                            value={storyData.interests} 
-                            onChange={handleInputChange}
-                            required 
-                            placeholder="Например: космос, динозавры, принцессы"
-                        />
-                    </label>
-                </div>
-                <div className="form-group">
-                    <label>
-                        Тип истории:
-                        <select 
-                            name="template" 
-                            value={storyData.template} 
-                            onChange={handleInputChange}
-                        >
-                            <option value="1">Космические приключения</option>
-                            <option value="2">Волшебная сказка</option>
-                            <option value="3">Приключения с животными</option>
-                            <option value="4">Путешествия во времени</option>
-                        </select>
-                    </label>
-                </div>
+            <h2>{t('createStory.title')}</h2>
+            
+            {showForm ? (
+                <form onSubmit={(e) => e.preventDefault()}>
+                    <div className="form-group">
+                        <label>
+                            {t('createStory.form.childName')} 
+                            <input 
+                                type="text" 
+                                name="name" 
+                                value={storyData.name} 
+                                onChange={handleInputChange}
+                                required 
+                            />
+                        </label>
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            {t('createStory.form.gender.label')}
+                            <select 
+                                name="gender" 
+                                value={storyData.gender} 
+                                onChange={handleInputChange}
+                            >
+                                <option value="male">{t('createStory.form.gender.male')}</option>
+                                <option value="female">{t('createStory.form.gender.female')}</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            {t('createStory.form.age')} 
+                            <input 
+                                type="number" 
+                                name="age" 
+                                value={storyData.age} 
+                                onChange={handleInputChange}
+                                required 
+                                min="1"
+                                max="12"
+                            />
+                        </label>
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            {t('createStory.form.interests.label')} 
+                            <input 
+                                type="text" 
+                                name="interests" 
+                                value={storyData.interests} 
+                                onChange={handleInputChange}
+                                required 
+                                placeholder={t('createStory.form.interests.placeholder')}
+                            />
+                        </label>
+                    </div>
+                    <div className="form-group">
+                        <label>
+                            {t('createStory.form.storyType.label')}
+                            <select 
+                                name="template" 
+                                value={storyData.template} 
+                                onChange={handleInputChange}
+                            >
+                                <option value="1">{t('createStory.form.storyType.space')}</option>
+                                <option value="2">{t('createStory.form.storyType.magic')}</option>
+                                <option value="3">{t('createStory.form.storyType.animals')}</option>
+                                <option value="4">{t('createStory.form.storyType.time')}</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button 
+                        type="button" 
+                        onClick={handleGenerateStory}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? t('createStory.buttons.generating') : t('createStory.buttons.generate')}
+                    </button>
+                </form>
+            ) : (
                 <button 
-                    type="button" 
-                    onClick={handleGenerateStory}
-                    disabled={isLoading}
+                    onClick={handleNewStory}
+                    className="new-story-button"
                 >
-                    {isLoading ? 'Генерация...' : 'Сгенерировать историю'}
+                    {t('createStory.buttons.new')}
                 </button>
-            </form>
+            )}
             
             {error && (
                 <div className="error-message">
@@ -212,31 +304,24 @@ function CreateStoryPage() {
             
             {story && (
                 <div className="story-container">
-                    <h3>Сгенерированная история:</h3>
+                    <div className="story-header">
+                        <h3>{storyTitle}</h3>
+                        <div className="story-header-buttons">
+                            <button 
+                                onClick={handleSaveStory}
+                                disabled={isLoading || !story}
+                                className="save-button"
+                            >
+                                {isLoading ? t('createStory.buttons.saving') : t('createStory.buttons.save')}
+                            </button>
+                        </div>
+                    </div>
+                    <StoryAudioPlayer 
+                        text={story}
+                        language={i18n.language}
+                    />
                     <div className="story-content">
                         {story}
-                    </div>
-                    <div className="story-actions">
-                        <button 
-                            onClick={handleSaveStory}
-                            disabled={isLoading}
-                            className="save-button"
-                        >
-                            {isLoading ? 'Сохранение...' : 'Сохранить историю'}
-                        </button>
-                        <button 
-                            onClick={() => {/* Добавить функционал редактирования */}}
-                            className="edit-button"
-                        >
-                            Редактировать
-                        </button>
-                        <button 
-                            onClick={handlePlayStory}
-                            className={`play-button ${isPlaying ? 'playing' : ''}`}
-                            disabled={!story || isLoading}
-                        >
-                            {isPlaying ? 'Остановить' : 'Воспроизвести'}
-                        </button>
                     </div>
                 </div>
             )}

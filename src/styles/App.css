@@ -30,20 +30,40 @@ body {
 /* Стили header */
 .header {
     background-color: var(--background-color);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
 }
 
 .nav-menu {
@@ -53,16 +73,13 @@ body {
 }
 
 .nav-link {
-    text-decoration: none;
     color: var(--secondary-color);
+    text-decoration: none;
     font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .nav-link:hover {
-    background-color: rgba(255, 215, 0, 0.1);
     color: var(--primary-color);
 }
 
@@ -180,53 +197,29 @@ body {
 
 /* Добавляем стили для страницы создания истории */
 .create-story-page {
-    position: relative;
-    padding: 2rem;
-    min-height: 100vh;
-    z-index: 1;
-}
-
-/* Добавляем фоновый паттерн */
-.create-story-page::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: var(--background-image);
-    background-size: 200px 200px;
-    background-repeat: repeat;
-    opacity: 0.15;
-    z-index: -1;
-}
-
-/* Стилизуем форму и контент */
-.create-story-page h2,
-.create-story-page form,
-.create-story-page .story-container {
-    position: relative;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+    padding: 1rem;
     max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
 }
 
 .create-story-page h2 {
-    font-size: 24px;
-    font-weight: 600;
     text-align: center;
     margin-bottom: 2rem;
-    color: var(--secondary-color);
+    font-size: 1.8rem;
 }
 
-/* Стилизация формы */
+.create-story-page form {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 .form-group {
     margin-bottom: 1.5rem;
+    width: 100%;
 }
 
 .form-group label {
@@ -238,6 +231,7 @@ body {
 
 .form-group input,
 .form-group select {
+    display: block;
     width: 100%;
     padding: 12px 16px;
     border: 2px solid var(--accent-color);
@@ -245,21 +239,35 @@ body {
     font-size: 16px;
     transition: all 0.3s ease;
     background-color: #FAFAFA;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+}
+
+.form-group input:invalid {
+    border-color: var(--error-color);
+}
+
+/* Стрелка для select */
+.form-group select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
 }
 
 .form-group input:focus,
 .form-group select:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
 }
 
-/* Стилизация кнопки */
+/* Стили для кнопок */
 button {
     width: 100%;
     padding: 14px 24px;
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
     border: none;
     border-radius: 12px;
     font-size: 16px;
@@ -267,17 +275,18 @@ button {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 1rem;
+    background-color: var(--primary-color);
+    color: white;
 }
 
-button:hover {
+button:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 button:disabled {
     background-color: var(--accent-color);
     cursor: not-allowed;
-    transform: none;
 }
 
 /* Стилизация сообщений */
@@ -333,14 +342,85 @@ button:disabled {
 /* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
     .create-story-page {
-        margin: 1rem;
-        padding: 1.5rem;
+        padding: 1rem;
+    }
+
+    .create-story-page h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
     }
 
     .form-group input,
-    .form-group select,
-    button {
+    .form-group select {
+        padding: 10px 14px;
         font-size: 14px;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .story-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .story-header-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .story-header .save-button,
+    .story-header .play-button {
+        width: 48%;
+    }
+
+    .language-switcher {
+        margin: 1rem 0;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-links {
+        margin: 1rem 0;
+    }
+}
+
+/* Исправления для iPhone */
+@media screen and (max-width: 480px) {
+    input[type="number"],
+    input[type="text"],
+    select {
+        font-size: 16px !important; /* Предотвращает масштабирование на iOS */
+    }
+
+    .story-container {
+        padding: 1rem;
+    }
+
+    .story-content {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+}
+
+/* Исправление для темной темы на мобильных */
+@media (prefers-color-scheme: dark) {
+    .form-group input,
+    .form-group select {
+        background-color: #FFFFFF;
     }
 }
 
@@ -359,69 +439,263 @@ button:disabled {
 
 /* Добавляем стили для кнопок действий */
 .story-actions {
+    display: none;
+}
+
+/* Обновляем стили для story-header и кнопок */
+.story-header {
     display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--accent-color);
 }
 
-.story-actions button {
-    flex: 1;
-    max-width: 200px;
+.story-header h3 {
+    margin: 0;
+    margin-bottom: 0.5rem;
 }
 
-.save-button {
-    background-color: var(--success-color);
+.story-header-buttons {
+    display: flex;
+    gap: 0.5rem;
 }
 
-.edit-button {
-    background-color: var(--primary-color);
+.story-header-buttons button {
+    min-width: 80px; /* Уменьшаем минимальную ширину */
+    padding: 0.3rem 0.6rem; /* Уменьшаем padding */
+    font-size: 0.8rem; /* Уменьшаем размер шрифта */
+    height: 28px; /* Уменьшаем высоту */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
 }
 
 .play-button {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     color: white;
-    transition: all 0.3s ease;
 }
 
 .play-button.playing {
     background-color: var(--error-color);
 }
 
-/* Добавляем анимацию для кнопки воспроизведения */
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
+.delete-button {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.play-button:hover,
+.delete-button:hover {
+    opacity: 0.9;
+}
+
+.new-story-button {
+    background-color: var(--primary-color);
+    margin-bottom: 2rem;
+    max-width: 300px;
+}
+
+/* Обновляем стили для story-container */
+.story-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+.story-content {
+    margin: 1rem 0;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+/* Стили для страницы "Мои истории" */
+.my-stories-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.my-stories-page h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.no-stories {
+    text-align: center;
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+}
+
+.stories-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Ровно три колонки */
+    gap: 2rem; /* Отступ между карточками */
+    padding: 1rem;
+}
+
+.story-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    height: auto; /* Меняем с 100% на auto чтобы контейнер растягивался под контент */
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.story-header {
+    padding: 0.5rem 0; /* Уменьшаем вертикальные отступы */
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.story-content {
+    padding: 0.5rem 0;
+    flex-grow: 1;
+    /* Удаляем ограничение на количество строк */
+    /* display: -webkit-box; */
+    /* -webkit-line-clamp: 5; */
+    /* -webkit-box-orient: vertical; */
+    line-height: 1.5;
+    /* Добавляем нормальный перенос текста */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.story-title {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--secondary-color);
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 1024px) {
+    .stories-list {
+        grid-template-columns: repeat(2, 1fr); /* Две колонки на планшетах */
     }
 }
 
-.play-button.playing {
-    animation: pulse 2s infinite;
+@media (max-width: 768px) {
+    .stories-list {
+        grid-template-columns: 1fr; /* Одна колонка на мобильных */
+        gap: 1rem;
+    }
 }
 
-/* Стили для состояния наведения */
-.play-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Стили для переключателя языков */
+.language-switcher {
+    margin-left: 2rem;
 }
 
-/* Стили для отключенного состояния */
-.play-button:disabled {
+.language-switcher select {
+    padding: 0.5rem;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    min-width: 120px; /* Добавляем минимальную ширину для трех языков */
+}
+
+.language-switcher select option[value="ru"] {
+    content: "Русский";
+}
+
+.language-switcher select option[value="en"] {
+    content: "English";
+}
+
+.language-switcher select option[value="de"] {
+    content: "Deutsch";
+}
+
+.language-switcher select:hover {
+    border-color: var(--primary-color);
+}
+
+.language-switcher select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.2);
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-menu {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .language-switcher {
+        margin: 1rem 0;
+    }
+
+    .story-header-buttons {
+        width: auto; /* Убираем полную ширину */
+        justify-content: flex-start; /* Выравниваем по левому краю */
+    }
+
+    .story-header-buttons button {
+        min-width: 80px;
+    }
+}
+
+/* Стили для аудио плеера */
+.audio-player {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.audio-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.audio-controls audio {
+    width: 100%;
+    max-width: 400px;
+}
+
+.generate-audio-button,
+.download-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.generate-audio-button:hover,
+.download-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.generate-audio-button:disabled {
     background-color: var(--accent-color);
     cursor: not-allowed;
-    transform: none;
-}
-
-/* Стили для предпросмотра */
-.preview-container {
-    margin-top: 2rem;
-    padding: 1rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 } 
